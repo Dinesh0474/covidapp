@@ -1,0 +1,20 @@
+# Stage 1: Build ReactJS Frontend
+FROM node:14 as frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Production Image
+FROM node:14
+WORKDIR /app
+
+# Copy built frontend from Stage 1
+COPY --from=frontend /app/build /app/build
+
+# Expose port
+EXPOSE 3000
+
+# Run the frontend server
+CMD ["npx", "serve", "-s", "build"]
